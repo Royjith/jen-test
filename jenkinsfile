@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Terraform Init') {
+            steps {
+                sh 'https://github.com/Royjith/jen-test.git && terraform init'
+            }
+        }
+        stage('Terraform Apply') {
+            steps {
+                sh 'https://github.com/Royjith/jen-test.git && terraform apply -auto-approve'
+            }
+        }
+    }
+}
