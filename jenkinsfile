@@ -1,21 +1,22 @@
-etepipeline {
+pipeline {
     agent any
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main', credentialsId: 'gitid', url: 'https://github.com/Royjith/jen-test.git'
             }
         }
-        stage('Terraform Init') {
+        stage('Terraform init') {
             steps {
-                sh 'https://github.com/Royjith/jen-test.git && terraform init'
+                sh 'terraform init'
             }
         }
-        stage('Terraform Apply') {
+        stage('Terraform delete') {
             steps {
-                sh 'https://github.com/Royjith/jen-test.git && terraform Destroy -auto-approve'
+                sh 'terraform destroy --auto-approve'
             }
         }
+        
     }
 }
