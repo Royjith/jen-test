@@ -21,12 +21,6 @@ pipeline {
                         sh 'terraform init'
                     }
                 }
-                stage('Terraform init on Slave 3') {
-                    agent { label 'slave3' }
-                    steps {
-                        sh 'terraform init'
-                    }
-                }
             }
         }
         stage('Parallel Applies') {
