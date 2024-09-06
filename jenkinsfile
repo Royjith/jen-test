@@ -1,4 +1,4 @@
-pipeline {
+etepipeline {
     agent any
 
     stages {
@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Terraform Apply') {
             steps {
-                sh 'https://github.com/Royjith/jen-test.git && terraform apply -auto-approve'
+                sh 'https://github.com/Royjith/jen-test.git && terraform Destroy -auto-approve'
             }
         }
     }
