@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
 
     stages {
         stage('Checkout') {
@@ -7,16 +7,43 @@ pipeline {
                 git branch: 'main', credentialsId: 'gitid', url: 'https://github.com/Royjith/jen-test.git'
             }
         }
-        stage('Terraform init') {
-            steps {
-                sh 'terraform init'
+        stage('Parallel Builds') {
+            parallel {
+                stage('Terraform init on Slave 1') {
+                    agent { label 'slave1' }
+                    steps {
+                        sh 'terraform init'
+                    }
+                }
+                stage('Terraform init on Slave 2') {
+                    agent { label 'slave2' }
+                    steps {
+                        sh 'terraform init'
+                    }
+                }
+                stage('Terraform init on Slave 3') {
+                    agent { label 'slave3' }
+                    steps {
+                        sh 'terraform init'
+                    }
+                }
             }
         }
-        stage('Terraform delete') {
-            steps {
-                sh 'terraform destroy --auto-approve'
+        stage('Parallel Applies') {
+            parallel {
+                stage('Terraform apply on slave1') {
+                    agent { label 'slave1' }
+                    steps {
+                        sh 'terraform apply --auto-approve'
+                    }
+                }
+                stage('Terraform apply on slave2') {
+                    agent { label 'slave2' }
+                    steps {
+                        sh 'terraform apply --auto-approve'
+                    }
+                }
             }
         }
-        
     }
 }
