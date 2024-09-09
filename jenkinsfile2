@@ -1,7 +1,11 @@
 pipeline {
+    agent none
+
     stages {
         stage('Checkout') {
-            agent { label 'slave1,slave2' } // specify a single node label here
+            agent {
+                label 'slave1'
+            }
             steps {
                 git branch: 'main', credentialsId: 'gitid', url: 'https://github.com/Royjith/jen-test.git'
             }
@@ -9,7 +13,9 @@ pipeline {
         stage('Parallel Builds') {
             parallel {
                 stage('Terraform init on Slave 1 or 2') {
-                    agent { labels 'slave1,slave2' } // specify multiple node labels here
+                    agent {
+                        label 'slave1 || slave2'
+                    }
                     steps {
                         sh 'terraform init'
                     }
@@ -19,7 +25,9 @@ pipeline {
         stage('Parallel Applies') {
             parallel {
                 stage('Terraform apply on slave1 or 2') {
-                    agent { labels 'slave1,slave2' } // specify multiple node labels here
+                    agent {
+                        label 'slave1 || slave2'
+                    }
                     steps {
                         sh 'terraform apply --auto-approve'
                     }
