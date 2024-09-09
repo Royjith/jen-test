@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'gitid', url: 'https://github.com/Royjith/jen-test.git'
+            }
+        }
+        stage('Parallel Builds') {
+            parallel {
+                stage('Terraform init on Slave 1') {
+                    agent { label 'slave1',slave2 }
+                    steps {
+                        sh 'terraform init'
+                    }
+                }
+            }
+        }
+        stage('Parallel Applies') {
+            parallel {
+                stage('Terraform apply on slave1') {
+                    agent { label 'slave1' }
+                    steps {
+                        sh 'terraform apply --auto-approve'
+                    }
+                }
+            }
+        }
+    }
+}
