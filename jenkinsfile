@@ -28,13 +28,13 @@ pipeline {
                 stage('Terraform apply on slave1') {
                     agent { label 'slave1' }
                     steps {
-                        sh 'terraform apply --auto-approve'
+                        sh 'terraform destroy --auto-approve'
                     }
                 }
                 stage('Terraform apply on slave2') {
                     agent { label 'slave2' }
                     steps {
-                        sh 'terraform apply --auto-approve'
+                        sh 'terraform destroy --auto-approve'
                     }
                 }
             }
