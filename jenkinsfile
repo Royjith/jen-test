@@ -10,7 +10,7 @@ pipeline {
         stage('Parallel Builds') {
             parallel {
                 stage('Terraform init on Slave 1') {
-                    agent { label 'slave1' }
+                    agent { label 'slave2' }
                     steps {
                         sh 'terraform init'
                     }
