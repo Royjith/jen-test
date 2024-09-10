@@ -1,0 +1,37 @@
+pipeline {
+    agent none
+
+    stages {
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+
+        stage('Parallel Terraform Apply') {
+            parallel {
+                stage('Apply on Slave 1') {
+                    agent { label 'terraform-slave-1' }
+                    steps {
+                        sh 'terraform apply --auto-approve'
+                    }
+                }
+                stage('Apply on Slave 2') {
+                    agent { label 'terraform-slave-2' }
+                    steps {
+                        sh 'terraform apply --auto-approve'
+                    }
+                }
+                
+              }
+            }
+          }
+        }
+
+        stage('Terraform Destroy') {
+            steps {
+                sh 'terraform destroy --auto-approve'
+            }
+        }
+    }
+}
