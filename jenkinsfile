@@ -25,8 +25,8 @@ pipeline {
         }
         stage('Parallel Applies') {
             parallel {
-                stage('Terraform apply on slave2') {
-                    agent { label 'slave1' }
+                stage('Terraform apply on slave1') {
+                    agent { label 'slave2' }
                     steps {
                         sh 'terraform destroy --auto-approve'
                     }
