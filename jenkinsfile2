@@ -29,7 +29,7 @@ pipeline {
                         label 'slave1 || slave2'
                     }
                     steps {
-                        sh 'terraform destroy --auto-approve'
+                        sh 'terraform apply --auto-approve'
                     }
                 }
             }
