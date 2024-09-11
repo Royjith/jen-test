@@ -3,7 +3,7 @@ pipeline {
 
     stages {
         stage('Terraform Init') {
-            agent { label 'terraform-slave-init' } // Assign this stage to a specific slave for initialization
+            agent { label 'slave2' } // Assign this stage to a specific slave for initialization
             steps {
                 script {
                     // Initialize Terraform
@@ -36,7 +36,7 @@ pipeline {
         }
 
         stage('Terraform Destroy') {
-            agent { label 'terraform-slave-destroy' } // Assign this stage to a specific slave for destruction
+            agent { label 'slave1' } // Assign this stage to a specific slave for destruction
             steps {
                 script {
                     // Destroy Terraform resources
