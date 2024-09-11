@@ -19,7 +19,7 @@ pipeline {
                     steps {
                         script {
                             // Apply Terraform configuration on Slave 1
-                            sh 'terraform apply --auto-approve -var "env=dev"'
+                            sh 'terraform apply --auto-approve'
                         }
                     }
                 }
@@ -28,7 +28,7 @@ pipeline {
                     steps {
                         script {
                             // Apply Terraform configuration on Slave 2
-                            sh 'terraform apply --auto-approve -var "env=prod"'
+                            sh 'terraform apply --auto-approve -var'
                         }
                     }
                 }
