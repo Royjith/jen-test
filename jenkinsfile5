@@ -1,0 +1,57 @@
+pipeline {
+    agent none // No global agent is defined; individual stages will define their own agents
+
+    stages {
+        stage('Terraform Init') {
+            agent { label 'terraform-slave-init' } // Assign this stage to a specific slave for initialization
+            steps {
+                script {
+                    // Initialize Terraform
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Parallel Terraform Apply') {
+            parallel {
+                stage('Apply on Slave 1') {
+                    agent { label 'slave1' } // Assign this stage to a specific slave
+                    steps {
+                        script {
+                            // Apply Terraform configuration on Slave 1
+                            sh 'terraform apply --auto-approve -var "env=dev"'
+                        }
+                    }
+                }
+                stage('Apply on Slave 2') {
+                    agent { label 'slave2' } // Assign this stage to a different slave
+                    steps {
+                        script {
+                            // Apply Terraform configuration on Slave 2
+                            sh 'terraform apply --auto-approve -var "env=prod"'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Destroy') {
+            agent { label 'terraform-slave-destroy' } // Assign this stage to a specific slave for destruction
+            steps {
+                script {
+                    // Destroy Terraform resources
+                    sh 'terraform destroy --auto-approve'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Optional: Perform any cleanup or notifications here
+                echo 'Pipeline completed.'
+            }
+        }
+    }
+}
