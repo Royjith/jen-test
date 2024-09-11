@@ -4,7 +4,10 @@ pipeline {
     stages {
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                script {
+                    // Initialize Terraform
+                    sh 'terraform init'
+                }
             }
         }
 
@@ -13,23 +16,32 @@ pipeline {
                 stage('Apply on Slave 1') {
                     agent { label 'terraform-slave-1' }
                     steps {
-                        sh 'terraform apply --auto-approve'
+                        script {
+                            // Apply Terraform configuration on Slave 1
+                            sh 'terraform apply --auto-approve'
+                        }
                     }
                 }
                 stage('Apply on Slave 2') {
                     agent { label 'terraform-slave-2' }
                     steps {
-                        sh 'terraform apply --auto-approve'
+                        script {
+                            // Apply Terraform configuration on Slave 2
+                            sh 'terraform apply --auto-approve'
+                        }
                     }
                 }
-                
-              }
             }
-          }
         }
 
         stage('Terraform Destroy') {
             steps {
-                sh 'terraform destroy --auto-approve'
+                script {
+                    // Destroy Terraform resources
+                    sh 'terraform destroy --auto-approve'
+                }
             }
         }
+    }
+}
+
