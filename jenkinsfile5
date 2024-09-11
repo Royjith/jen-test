@@ -28,7 +28,7 @@ pipeline {
                     steps {
                         script {
                             // Apply Terraform configuration on Slave 2
-                            sh 'terraform apply --auto-approve -var'
+                            sh 'terraform apply --auto-approve'
                         }
                     }
                 }
