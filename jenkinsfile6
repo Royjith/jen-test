@@ -4,9 +4,6 @@ pipeline {
     stages {
         stage('initialization') {
             agent { label 'slave1' }
-            options {
-                retry(3) // Retry the build stage up to 3 times
-            }
             steps {
                 script {
                     sh 'terraform init'
