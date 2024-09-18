@@ -1,0 +1,42 @@
+pipeline {
+    agent none
+    stages {
+        stage('Load Distribution') {
+            parallel {
+                stage('Terraform Apply on Node 1') {
+                    agent { label 'slave1' } // Replace with your agent label
+                    steps {
+                        script {
+                            // Set up your environment variables
+                            env.TF_VAR_example = 'value1'
+                            // Initialize Terraform
+                            sh 'terraform init'
+                            // Apply Terraform changes
+                            sh 'terraform apply -auto-approve'
+                        }
+                    }
+                }
+                stage('Terraform Apply on Node 2') {
+                    agent { label 'slave2' } // Replace with your agent label
+                    steps {
+                        script {
+                            // Set up your environment variables
+                            env.TF_VAR_example = 'value2'
+                            // Initialize Terraform
+                            sh 'terraform init'
+                            // Apply Terraform changes
+                            sh 'terraform apply -auto-approve'
+                        }
+                    }
+                }
+                // Add more nodes as needed
+            }
+        }
+    }
+    post {
+        always {
+            // Clean up or send notifications
+            echo 'Terraform apply completed.'
+        }
+    }
+}
