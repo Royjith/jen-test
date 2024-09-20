@@ -1,0 +1,21 @@
+pipeline {
+    agent none
+    stages {
+        stage('Run on Agent 1') {
+            agent { label 'slave1' }
+            steps {
+                script {
+                    try {
+                        // Your build steps here
+                    } catch (Exception e) {
+                        echo "Job failed on slave1, trying slave2..."
+                        currentBuild.result = 'FAILURE'
+                        // Trigger a new build on agent2
+                        build job: 'YourJobName', parameters: [string(name: 'AGENT', value: 'slave2')]
+                    }
+                }
+            }
+        }
+    }
+}
+
