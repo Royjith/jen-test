@@ -3,7 +3,7 @@ pipeline {
 
     stages {
         stage('Terraform Init') {
-            agent { label 'slave1' } // Run initialization on a dedicated slave
+            agent any // Run initialization on either slave
             steps {
                 script {
                     sh 'terraform init'
@@ -12,7 +12,7 @@ pipeline {
         }
 
         stage('Terraform Plan') {
-            agent { label 'slave2' } // Run planning on another dedicated slave
+            agent any // Run planning on either slave
             steps {
                 script {
                     sh 'terraform plan'
@@ -22,21 +22,21 @@ pipeline {
 
         stage('Parallel Terraform Apply') {
             parallel {
-                stage('Apply on Slave 1') {
-                    agent { label 'slave1' } // Run apply on the first slave
+                stage('Apply') {
+                    agent any // Run apply on either slave
                     steps {
                         script {
-                            // Apply Terraform configuration on Slave 1
+                            // Apply Terraform configuration
                             // Adjust the target if needed to balance the load
                             sh 'terraform apply --auto-approve'
                         }
                     }
                 }
-                stage('Apply on Slave 2') {
-                    agent { label 'slave2' } // Run apply on the second slave
+                stage('Apply') {
+                    agent any // Run apply on either slave
                     steps {
                         script {
-                            // Apply Terraform configuration on Slave 2
+                            // Apply Terraform configuration
                             // Adjust the target if needed to balance the load
                             sh 'terraform apply --auto-approve'
                         }
@@ -46,7 +46,7 @@ pipeline {
         }
 
         stage('Terraform Destroy') {
-            agent { label 'slave1' } // Run destroy on a dedicated slave
+            agent any // Run destroy on either slave
             steps {
                 script {
                     sh 'terraform destroy --auto-approve'
