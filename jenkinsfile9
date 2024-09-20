@@ -17,7 +17,7 @@ pipeline {
                         currentBuild.result = 'UNSTABLE' // Mark the build as unstable
                         retry(1) {
                             echo 'Retrying on agent2...'
-                            build job: 'YourJobName', parameters: [string(name: 'NODE_LABEL', value: 'slave2')]
+                            build job: 'pipeline2', parameters: [string(name: 'NODE_LABEL', value: 'slave2')]
                         }
                     }
                 }
