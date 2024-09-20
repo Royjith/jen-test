@@ -9,16 +9,15 @@ pipeline {
                     try {
                         // Run your job commands here
                         sh 'terraform init'
-                        sh 'terraform plan'
-                        sh 'terraform apply --auto-approve'
+                        sh 'terraform plan -out=tfplan' // Save the plan
+                        sh 'terraform apply tfplan' // Apply the saved plan
                     } catch (Exception e) {
-                        echo "Job failed on agent1: ${e.message}"
+                        echo "Job failed on slave1: ${e.message}"
                         // Retry the job on the second agent
                         currentBuild.result = 'UNSTABLE' // Mark the build as unstable
-                        retry(1) {
-                            echo 'Retrying on agent2...'
-                            build job: 'pipeline2', parameters: [string(name: 'NODE_LABEL', value: 'slave2')]
-                        }
+                        echo 'Retrying on slave2...'
+                        // Triggering a new build on the second agent
+                        build job: 'pipeline2', parameters: [string(name: 'NODE_LABEL', value: 'slave2')]
                     }
                 }
             }
@@ -37,3 +36,4 @@ pipeline {
         }
     }
 }
+
