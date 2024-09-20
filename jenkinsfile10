@@ -19,7 +19,7 @@ pipeline {
                         echo "Init stage failed on slave1, trying slave2..."
                         currentBuild.result = 'FAILURE'
                         // Trigger a new build on agent2
-                        build job: 'YourJobName', parameters: [string(name: 'AGENT', value: 'slave2')]
+                        build job: 'pipeline2', parameters: [string(name: 'AGENT', value: 'slave2')]
                     }
                 }
             }
