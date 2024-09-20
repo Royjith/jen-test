@@ -1,21 +1,71 @@
 pipeline {
     agent none
+
     stages {
-        stage('Run on Agent 1') {
-            agent { label 'slave1' }
-            steps {
-                script {
-                    try {
-                        // Your build steps here
-                    } catch (Exception e) {
-                        echo "Job failed on slave1, trying slave2..."
-                        currentBuild.result = 'FAILURE'
-                        // Trigger a new build on agent2
-                        build job: 'YourJobName', parameters: [string(name: 'AGENT', value: 'slave2')]
+        stage('Init') {
+            stage('Run on Agent 1') {
+                agent { label 'slave1' }
+                steps {
+                    script {
+                        try {
+                            // Change to the directory where your Terraform script is located
+                            dir('path/to/terraform/script') {
+                                // Initialize Terraform
+                                sh 'terraform init'
+                            }
+                        } catch (Exception e) {
+                            echo "Init stage failed on slave1, trying slave2..."
+                            currentBuild.result = 'FAILURE'
+                            // Trigger a new build on agent2
+                            build job: 'YourJobName', parameters: [string(name: 'AGENT', value: 'slave2')]
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Plan') {
+            stage('Run on Agent 1') {
+                agent { label 'slave1' }
+                steps {
+                    script {
+                        try {
+                            // Change to the directory where your Terraform script is located
+                            dir('path/to/terraform/script') {
+                                // Plan Terraform changes
+                                sh 'terraform plan'
+                            }
+                        } catch (Exception e) {
+                            echo "Plan stage failed on slave1, trying slave2..."
+                            currentBuild.result = 'FAILURE'
+                            // Trigger a new build on agent2
+                            build job: 'YourJobName', parameters: [string(name: 'AGENT', value: 'slave2')]
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Apply') {
+            stage('Run on Agent 1') {
+                agent { label 'slave1' }
+                steps {
+                    script {
+                        try {
+                            // Change to the directory where your Terraform script is located
+                            dir('path/to/terraform/script') {
+                                // Apply Terraform changes
+                                sh 'terraform apply --auto-approve'
+                            }
+                        } catch (Exception e) {
+                            echo "Apply stage failed on slave1, trying slave2..."
+                            currentBuild.result = 'FAILURE'
+                            // Trigger a new build on agent2
+                            build job: 'YourJobName', parameters: [string(name: 'AGENT', value: 'slave2')]
+                        }
                     }
                 }
             }
         }
     }
 }
-
