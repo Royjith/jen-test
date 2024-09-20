@@ -1,34 +1,33 @@
 pipeline {
-    agent any
+    agent { label 'slave1' } // Run the pipeline on the slave1 node
 
     stages {
-        stage('Terraform Init') {
+        stage('Terraform') {
             steps {
-                sh 'terraform init'
-            }
-        }
+                script {
+                    // Change to the directory where your Terraform script is located
+                    dir('path/to/terraform/script') {
+                        // Initialize Terraform
+                        sh 'terraform init'
 
-        stage('Parallel Terraform Apply') {
-            parallel {
-                stage('Apply on Slave1') {
-                    agent { label 'slave1' }
-                    steps {
-                        sh 'terraform apply --auto-approve'
-                    }
-                }
+                        // Plan Terraform changes
+                        sh 'terraform plan'
 
-                stage('Apply on Slave2') {
-                    agent { label 'slave2' }
-                    steps {
+                        // Apply Terraform changes
                         sh 'terraform apply --auto-approve'
+
+                        // Destroy Terraform infrastructure
+                        sh 'terraform destroy --auto-approve'
                     }
                 }
             }
         }
+    }
 
-        stage('Terraform Destroy') {
-            steps {
-                sh 'terraform destroy --auto-approve'
+    post {
+        always {
+            script {
+                echo 'Pipeline completed.'
             }
         }
     }
