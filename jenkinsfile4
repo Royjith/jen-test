@@ -49,18 +49,7 @@ pipeline {
                     }
                 }
             }
-        }
-
-        stage('Terraform Destroy') {
-            agent {
-                label 'slave1 || slave2' // Run destroy on either slave1 or slave2
-            }
-            steps {
-                script {
-                    sh 'terraform destroy --auto-approve'
-                }
-            }
-        }
+        }                               
     }
 
     post {
