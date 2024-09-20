@@ -1,0 +1,39 @@
+pipeline {
+    agent none
+
+    stages {
+        stage('Run Job on First Agent') {
+            agent { label 'agent1' }
+            steps {
+                script {
+                    try {
+                        // Run your job commands here
+                        sh 'terraform init'
+                        sh 'terraform plan'
+                        sh 'terraform apply --auto-approve'
+                    } catch (Exception e) {
+                        echo "Job failed on agent1: ${e.message}"
+                        // Retry the job on the second agent
+                        currentBuild.result = 'UNSTABLE' // Mark the build as unstable
+                        retry(1) {
+                            echo 'Retrying on agent2...'
+                            build job: 'YourJobName', parameters: [string(name: 'NODE_LABEL', value: 'agent2')]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Job completed successfully!'
+        }
+        unstable {
+            echo 'Job encountered issues but completed.'
+        }
+        failure {
+            echo 'Job failed on both agents.'
+        }
+    }
+}
