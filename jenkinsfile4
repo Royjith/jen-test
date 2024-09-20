@@ -1,12 +1,25 @@
 pipeline {
-    agent none
+    agent none // No global agent is defined; individual stages will define their own agents
 
     stages {
         stage('Terraform Init') {
+            agent {
+                label 'slave1 || slave2' // Run initialization on either slave1 or slave2
+            }
             steps {
                 script {
-                    // Initialize Terraform
                     sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            agent {
+                label 'slave1 || slave2' // Run planning on either slave1 or slave2
+            }
+            steps {
+                script {
+                    sh 'terraform plan'
                 }
             }
         }
@@ -14,7 +27,9 @@ pipeline {
         stage('Parallel Terraform Apply') {
             parallel {
                 stage('Apply on Slave 1') {
-                    agent { label 'terraform-slave-1' }
+                    agent {
+                        label 'slave1' // Run apply on slave1
+                    }
                     steps {
                         script {
                             // Apply Terraform configuration on Slave 1
@@ -23,7 +38,9 @@ pipeline {
                     }
                 }
                 stage('Apply on Slave 2') {
-                    agent { label 'terraform-slave-2' }
+                    agent {
+                        label 'slave2' // Run apply on slave2
+                    }
                     steps {
                         script {
                             // Apply Terraform configuration on Slave 2
@@ -35,13 +52,22 @@ pipeline {
         }
 
         stage('Terraform Destroy') {
+            agent {
+                label 'slave1 || slave2' // Run destroy on either slave1 or slave2
+            }
             steps {
                 script {
-                    // Destroy Terraform resources
                     sh 'terraform destroy --auto-approve'
                 }
             }
         }
     }
-}
 
+    post {
+        always {
+            script {
+                echo 'Pipeline completed.'
+            }
+        }
+    }
+}
