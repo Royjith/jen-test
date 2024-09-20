@@ -10,7 +10,7 @@ pipeline {
         stage('Parallel Builds') {
             parallel {
                 stage('Terraform init on Slave 1') {
-                    agent { label 'slave2' }
+                    agent { label 'slave1' }
                     steps {
                         sh 'terraform init'
                     }
@@ -26,7 +26,7 @@ pipeline {
         stage('Parallel Applies') {
             parallel {
                 stage('Terraform apply on slave1') {
-                    agent { label 'slave2' }
+                    agent { label 'slave1' }
                     steps {
                         sh 'terraform destroy --auto-approve'
                     }
