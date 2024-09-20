@@ -3,7 +3,7 @@ pipeline {
 
     stages {
         stage('Run Job on First Agent') {
-            agent { label 'agent1' }
+            agent { label 'slave1' }
             steps {
                 script {
                     try {
@@ -17,7 +17,7 @@ pipeline {
                         currentBuild.result = 'UNSTABLE' // Mark the build as unstable
                         retry(1) {
                             echo 'Retrying on agent2...'
-                            build job: 'YourJobName', parameters: [string(name: 'NODE_LABEL', value: 'agent2')]
+                            build job: 'YourJobName', parameters: [string(name: 'NODE_LABEL', value: 'slave2')]
                         }
                     }
                 }
