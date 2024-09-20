@@ -1,0 +1,35 @@
+pipeline {
+    agent none  // No default agent
+
+    stages {
+        stage('Init') {
+            steps {
+                script {
+                    def agents = ['slave1', 'slave2',] // List of agents to try
+                    def success = false
+                    
+                    for (agent in agents) {
+                        try {
+                            echo "Trying agent: ${agent}"
+                            node(agent) {
+                                dir('path/to/terraform/script') {
+                                    echo 'Starting Terraform Init...'
+                                    sh 'terraform init'
+                                    echo 'Terraform Init completed.'
+                                }
+                            }
+                            success = true
+                            break  // Exit loop if successful
+                        } catch (Exception e) {
+                            echo "Failed on agent: ${agent}. Error: ${e.message}"
+                        }
+                    }
+                    
+                    if (!success) {
+                        error("All agent attempts failed.")
+                    }
+                }
+            }
+        }
+    }
+}
