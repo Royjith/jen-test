@@ -5,26 +5,26 @@ pipeline {
         stage('Init') {
             agent { label 'slave1' }
             options {
-                timeout(time: 10, unit: 'SECONDS') // timeout after 10 minutes
+                timeout(time: 10, unit: 'SECONDS') // timeout after 10 seconds
             }
             steps {
                 script {
-                    try {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                         // Change to the directory where your Terraform script is located
-                        //dir('path/to/terraform/script') 
+                        dir('path/to/terraform/script') {
                             // Initialize Terraform
                             sh 'terraform init'
                         }
-                    } catch (Exception e) {
-                        echo "Init stage failed on slave1, trying slave2..."
-                        currentBuild.result = 'FAILURE'
-                        // Trigger a new build on agent2
-                        build job: 'pipeline2', parameters: [string(name: 'AGENT', value: 'slave2')]
                     }
                 }
             }
         }
-
-        // ... other stages ...
+    }
+    post {
+        failure {
+            echo "Init stage failed on slave1, trying slave2..."
+            // Trigger a new build on agent2
+            build job: 'YourJobName', parameters: [string(name: 'AGENT', value: 'slave2')]
+        }
     }
 }
